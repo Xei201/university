@@ -280,58 +280,301 @@ INSERT INTO semester(start_date, end_date)
 VALUE ('2023-09-01 09:00:00', '2023-12-31 09:00:00');
 ```
 
+## Часть 3: FastAPI.
 
+### Реализация списка точкек входа API
 
+Применялись FastAPI + SQLAlchemy + Pydantic + PostgreSQL.
+Созданы входные и выходные модели Pydantic для каждого маршрута.
 
+### API
 
+- `POST /api/v1/students` - создать нового студента.
+- `GET /api/v1/students/{student_id}` - получить информацию о студенте по его id.
+- `PUT /api/v1/students/{student_id}` - обновить информацию о студенте по его id.
+- `DELETE /api/v1/students/{student_id}` - удалить студента по его id.
+- `GET /api/v1/teachers` - получить список всех преподавателей.
+- `POST /api/v1/courses` - создать новый курс.
+- `GET /api/v1/courses/{course_id}` - получить информацию о курсе по его id.
+- `GET /api/v1/courses/{course_id}/students` - получить список всех студентов на курсе.
+- `POST /api/v1/grades` - создать новую оценку для студента по курсу.
+- `PUT /api/v1/grades/{grade_id}` - обновить оценку студента по курсу.
 
+### Патчинг документа
 
+Патчинг проводится согласно [RFC-7396](https://tools.ietf.org/html/rfc7396).
 
+### Пример работы
 
+#### 1. `POST /api/v1/students` - создать нового студента.
 
+Запрос:
 
+```http
+POST /api/v1/students HTTP/1.1
+accept: application/json
+content-type: application/json
 
-
-
-
-1. Разместить код на любом доступном git-резпозитории.
-2. Описать файл `README.md`, описать как запустить проект.
-3. Соблюдать единый code-style на протяжении всего проекта
-4. Обязательна документация для каждого метода, класса и поля. Указание типов обязательно.
-5. Первый коммит в проекте должен быть - настройка и конфигурация фреймворка (скелета).
-6. Отчет в виде затраченного времени, полнота исполнения задания, а также, возникшие проблемы сложности и их решения, пожелания, комментарий и пр.
-
-## API
-
-- `POST /api/v1/document/` - создаем черновик документа
-- `GET /api/v1/document/{id}` - получить документ по id
-- `PATCH /api/v1/document/{id}` - редактировать документ
-- `POST /api/v1/document/{id}/publish` - опубликовать документ
-- `GET /api/v1/document/?page=1&perPage=20` - получить список документов с пагинацией, сортировка в последние созданные сверху.
-
-Дополнительные условия:
-
-- Если документ не найден, то в ответе возвращается 404 код.
-- При попытке редактирования документа, который уже опубликован, должно возвращаться 400.
-- Попытка опубликовать уже опубликованный документ  возвращает 200.
-- Все запросы на конкретный документ возвращают этот документ. [JsonSchema ответа с документом](document-response.json).
-- Список документов возвращается в виде массива документов и значений пагинации. [JsonSchema списка документов](document-list-response.json).
-- Запрос `PATCH` отправляется с телом json в соответсвующей иерархии документа, все поля, кроме `payload` игнорируются. Если `payload` не передан, то ответ 400.
-
-### Объект документа
-
-```js
-document = {
-  id: "some-uuid-string",
-  status: "draft|published",
-  payload: Object,
-  createAt: "iso-8601 date time with time zone",
-  modifyAt: "iso-8601 date time with time zone"
+{
+  "first_name": "Oleg22",
+  "last_name": "Volkov2"
 }
 ```
 
-[JsonSchema для документа](document.json)
+Ответ:
 
-## Патчинг документа
+```http
+HTTP/1.1 201 CREATED
+content-type: application/json
 
-Патчинг проводится согласно [RFC-7396](https://tools.ietf.org/html/rfc7396).
+{
+    "status": "success",
+    "object": {
+        "student_id": 6,
+        "group_id": null,
+        "first_name": "Oleg22",
+        "last_name": "Volkov2"
+    }
+}
+```
+
+#### 2. `GET /api/v1/students/{student_id}` - получить информацию о студенте по его id.
+
+Запрос:
+
+```http
+PATCH /api/v1/students/1 HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+
+{
+    "first_name": "Oleg22",
+    "last_name": "Volkov2",
+    "group_id": null,
+    "student_id": 1,
+    "programs": [
+        {
+            "program_id": 1,
+            "name": "Mach_full",
+            "teacher_id": null,
+            "course_id": 1
+        },
+        {
+            "program_id": 2,
+            "name": "Mach_ABC",
+            "teacher_id": null,
+            "course_id": 1
+        }
+    ]
+}
+```
+
+#### 3. `PUT /api/v1/students/{student_id}` - обновить информацию о студенте по его id.
+
+Запрос:
+
+```http
+PUT /api/v1/students/6 HTTP/1.1
+accept: application/json
+content-type: application/json
+
+{
+  "first_name": "PutOleg",
+  "last_name": "PVolkov2"
+}
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+
+{
+    "status": "success",
+    "student": {
+        "student_id": 6,
+        "group_id": null,
+        "first_name": "PutOleg",
+        "last_name": "PVolkov2",
+        "programs": []
+    }
+}
+```
+
+#### 4. `DELETE /api/v1/students/{student_id}` - удалить студента по его id.
+
+Запрос:
+
+```http
+PATCH /api/v1/students/6 HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 204 NO CONTENT
+content-type: application/json
+```
+
+#### 5. `GET /api/v1/teachers` - получить список всех преподавателей.
+
+Запрос:
+
+```http
+PATCH /api/v1/teachers HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+
+[
+    {
+        "first_name": "Ivanov",
+        "last_name": "Ivan",
+        "faculty_id": 1,
+        "teacher_id": 1
+    },
+    {
+        "first_name": "Petrov",
+        "last_name": "Petr",
+        "faculty_id": 2,
+        "teacher_id": 2
+    }
+]
+```
+
+#### 6. `POST /api/v1/courses` - создать новый курс.
+
+Запрос:
+
+```http
+POST /api/v1/courses HTTP/1.1
+accept: application/json
+content-type: application/json
+
+{
+  "name": "IT"
+}
+```
+
+Ответ:
+
+```http
+HTTP/1.1 201 CREATED
+content-type: application/json
+
+{
+    "status": "success",
+    "object": {
+        "name": "IT",
+        "course_id": 4
+    }
+}
+```
+#### 7. `GET /api/v1/courses/{course_id}` - получить информацию о курсе по его id.
+
+Запрос:
+
+```http
+PATCH /api/v1/courses/1 HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+
+{
+    "name": "Mach",
+    "course_id": 1,
+    "course_programs": [
+        {
+            "program_id": 1,
+            "name": "Mach_full",
+            "teacher_id": null,
+            "course_id": 1
+        },
+        {
+            "program_id": 2,
+            "name": "Mach_ABC",
+            "teacher_id": null,
+            "course_id": 1
+        },
+        {
+            "program_id": 4,
+            "name": "Mach_A",
+            "teacher_id": 1,
+            "course_id": 1
+        },
+        {
+            "program_id": 5,
+            "name": "Mach_b",
+            "teacher_id": 1,
+            "course_id": 1
+        }
+    ]
+}
+```
+
+#### 8. `GET /api/v1/courses/{course_id}` - получить информацию о курсе по его id.
+
+Запрос:
+
+```http
+PATCH /api/v1/courses/1 HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+
+{
+    "name": "Mach",
+    "course_id": 1,
+    "course_programs": [
+        {
+            "program_id": 1,
+            "name": "Mach_full",
+            "teacher_id": null,
+            "course_id": 1
+        },
+        {
+            "program_id": 2,
+            "name": "Mach_ABC",
+            "teacher_id": null,
+            "course_id": 1
+        },
+        {
+            "program_id": 4,
+            "name": "Mach_A",
+            "teacher_id": 1,
+            "course_id": 1
+        },
+        {
+            "program_id": 5,
+            "name": "Mach_b",
+            "teacher_id": 1,
+            "course_id": 1
+        }
+    ]
+}
+```
+
+
