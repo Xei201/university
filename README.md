@@ -530,13 +530,138 @@ content-type: application/json
 }
 ```
 
-#### 8. `GET /api/v1/courses/{course_id}` - получить информацию о курсе по его id.
+#### 8.1 `GET /api/v1/courses/{course_id}/students` - получить список всех студентов на курсе.
 
 Запрос:
 
 ```http
-PATCH /api/v1/courses/1 HTTP/1.1
+PATCH /api/v1/courses/1/students HTTP/1.1
 accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+[
+    {
+        "first_name": "Oleg22",
+        "last_name": "Volkov2",
+        "group_id": null
+    }
+]
+```
+
+#### 8.2 `GET /api/v1/courses/{course_id}/students_on_program` - получить список всех студентов на курсе по программа курса.
+
+Запрос:
+
+```http
+PATCH /api/v1/courses/1/students_on_program HTTP/1.1
+accept: application/json
+```
+
+Ответ:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json
+{
+    "name": "Mach",
+    "course_id": 1,
+    "course_programs": [
+        {
+            "program_id": 1,
+            "name": "Mach_full",
+            "teacher_id": null,
+            "course_id": 1,
+            "students": [
+                {
+                    "student_id": 1,
+                    "first_name": "Oleg22",
+                    "last_name": "Volkov2",
+                    "group_id": null
+                }
+            ]
+        },
+        {
+            "program_id": 2,
+            "name": "Mach_ABC",
+            "teacher_id": null,
+            "course_id": 1,
+            "students": [
+                {
+                    "student_id": 1,
+                    "first_name": "Oleg22",
+                    "last_name": "Volkov2",
+                    "group_id": null
+                }
+            ]
+        },
+        {
+            "program_id": 4,
+            "name": "Mach_A",
+            "teacher_id": 1,
+            "course_id": 1,
+            "students": []
+        },
+        {
+            "program_id": 5,
+            "name": "Mach_b",
+            "teacher_id": 1,
+            "course_id": 1,
+            "students": []
+        }
+    ]
+}
+```
+
+#### 9. `POST /api/v1/grades` - создать новую оценку для студента по курсу.
+
+Запрос:
+
+```http
+POST /api/v1/grades HTTP/1.1
+accept: application/json
+content-type: application/json
+
+{
+  "mark": 5,
+  "student_id": 1,
+  "exam_id": 1
+}
+```
+
+Ответ:
+
+```http
+HTTP/1.1 201 CREATED
+content-type: application/json
+
+{
+    "status": "success",
+    "object": {
+        "mark": 5,
+        "student_id": 1,
+        "exam_id": 1,
+        "mark_exam_id": 2
+    }
+}
+```
+
+#### 10. `PUT /api/v1/grades/{grade_id}` - обновить оценку студента по курсу.
+
+Запрос:
+
+```http
+PUT /api/v1/grades/6 HTTP/1.1
+accept: application/json
+content-type: application/json
+
+{
+  "mark": 4
+}
 ```
 
 Ответ:
@@ -546,35 +671,12 @@ HTTP/1.1 200 OK
 content-type: application/json
 
 {
-    "name": "Mach",
-    "course_id": 1,
-    "course_programs": [
-        {
-            "program_id": 1,
-            "name": "Mach_full",
-            "teacher_id": null,
-            "course_id": 1
-        },
-        {
-            "program_id": 2,
-            "name": "Mach_ABC",
-            "teacher_id": null,
-            "course_id": 1
-        },
-        {
-            "program_id": 4,
-            "name": "Mach_A",
-            "teacher_id": 1,
-            "course_id": 1
-        },
-        {
-            "program_id": 5,
-            "name": "Mach_b",
-            "teacher_id": 1,
-            "course_id": 1
-        }
-    ]
+    "status": "success",
+    "student": {
+        "mark": 4,
+        "student_id": 1,
+        "exam_id": 1,
+        "mark_exam_id": 2
+    }
 }
 ```
-
-
