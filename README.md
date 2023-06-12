@@ -1,6 +1,6 @@
 # Задание для кандидата на должность Junior Python Developer
 ### Задачи
-1. База данных.
+1. [База данных.](https://github.com/Xei201/university/tree/master)
 2. SQL запросы.
 3. FastAPI.
 4. Публикация и документация.
@@ -299,6 +299,9 @@ VALUE ('2023-09-01 09:00:00', '2023-12-31 09:00:00');
 - `GET /api/v1/courses/{course_id}/students` - получить список всех студентов на курсе.
 - `POST /api/v1/grades` - создать новую оценку для студента по курсу.
 - `PUT /api/v1/grades/{grade_id}` - обновить оценку студента по курсу.
+
+### Модели Pydantic
+Все модели собраны в файле [models.py](https://github.com/Xei201/university/blob/master/src/university/models.py)
 
 ### Патчинг документа
 
@@ -680,3 +683,8 @@ content-type: application/json
     }
 }
 ```
+
+## Часть 4: Публикация и документация.
+
+### Публикация и документация.
+Вся информация по проекту размещена в [репозитории на GitHub](https://github.com/Xei201/university/tree/master)
