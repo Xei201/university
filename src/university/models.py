@@ -2,11 +2,13 @@ from sqlalchemy import TIMESTAMP, Column, String, BigInteger, Integer, ForeignKe
 from fastapi_utils.guid_type import GUID_SERVER_DEFAULT_POSTGRESQL
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from .database import Base
 
 
 # Association table for student and program Many-to-many
-ProgramStudent = Table('program_student',
+ProgramStudent = Table(
+    'program_student',
+    Base.metadata,
     Column('program_student_id',
         BigInteger,
         primary_key=True,
@@ -85,7 +87,7 @@ class Course(Base):
 class Semester(Base):
     __tablename__ = 'semester'
 
-    semester = Column(
+    semester_id = Column(
         BigInteger,
         primary_key=True,
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL)
@@ -124,7 +126,7 @@ class Audience(Base):
         primary_key=True)
     building_number = Column(
         Integer,
-        ForeignKey("building.building_numer", ondelete="CASCADE"))
+        ForeignKey("building.building_number", ondelete="CASCADE"))
 
     building = relationship(
         "Building",
@@ -189,7 +191,7 @@ class Student(Base):
         nullable=True)
 
     group = relationship(
-        "Group",
+        "GroupStudent",
         back_populates="students",
     )
     programs = relationship(
@@ -197,13 +199,13 @@ class Student(Base):
         secondary=ProgramStudent,
         back_populates='students')
     marks = relationship(
-        "Mart",
+        "Mark",
         back_populates="student",
         cascade="all, delete",
         passive_deletes=True,
     )
     exam_marks = relationship(
-        "Mart_exam",
+        "Mark_exam",
         back_populates="student",
         cascade="all, delete",
         passive_deletes=True,
@@ -272,6 +274,7 @@ class CourseProgram(Base):
         BigInteger,
         primary_key=True,
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL)
+    name = Column(String(50), nullable=False)
     teacher_id = Column(
         Integer,
         ForeignKey("teacher.teacher_id", ondelete="SET NULL"),
@@ -293,7 +296,7 @@ class CourseProgram(Base):
         secondary=ProgramStudent,
         back_populates='programs')
     schedules = relationship(
-        "CourseProgram",
+        "Schedule",
         back_populates="program",
         cascade="all, delete",
         passive_deletes=True,
@@ -319,7 +322,7 @@ class Schedule(Base):
     audience_id = Column(
         Integer,
         ForeignKey("audience.audience_number", ondelete="CASCADE"))
-    subject_ig = Column(
+    subject = Column(
         Integer,
         ForeignKey("course_program.program_id", ondelete="CASCADE"))
     group = relationship(
@@ -345,7 +348,7 @@ class Exercise(Base):
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL)
     title = Column(String(50), nullable=False)
     description = Column(String(255), nullable=False)
-    date_creation = Column(
+    created_at = Column(
         TIMESTAMP,
         nullable=False,
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL)
@@ -357,7 +360,7 @@ class Exercise(Base):
         back_populates="exercises",
     )
     marks = relationship(
-        "Mart",
+        "Mark",
         back_populates="exercise",
         cascade="all, delete",
         passive_deletes=True,
@@ -376,7 +379,7 @@ class Mark(Base):
         ForeignKey("student.student_id", ondelete="CASCADE"))
     exercise_id = Column(
         Integer,
-        ForeignKey("exercise.exercise_numer", ondelete="CASCADE"))
+        ForeignKey("exercise.exercise_id", ondelete="CASCADE"))
 
     student = relationship(
         "Student",
@@ -404,7 +407,7 @@ class Exam(Base):
         back_populates="exams",
     )
     exam_marks = relationship(
-        "Mart_exam",
+        "Mark_exam",
         back_populates="exam",
         cascade="all, delete",
         passive_deletes=True,
@@ -431,7 +434,7 @@ class Mark_exam(Base):
         back_populates="exam_marks",
     )
     exam = relationship(
-        "Exercise",
+        "Exam",
         back_populates="exam_marks",
     )
 

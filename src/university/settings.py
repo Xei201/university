@@ -6,4 +6,6 @@ POSTGRES_HOSTNAME = "localhost"
 
 DATABASE_PORT = "5432"
 
-POSTGRES_DB = "university2"
+POSTGRES_DB = "university4"
+
+API_VERSION = "/api/v1"

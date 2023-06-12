@@ -1,16 +1,33 @@
-# This is a sample Python script.
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from university import settings
+from university.routers import building, audience, student, teacher, course
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+app.include_router(building.router, prefix=settings.API_VERSION)
+app.include_router(audience.router, prefix=settings.API_VERSION)
+app.include_router(student.router, prefix=settings.API_VERSION)
+app.include_router(teacher.router, prefix=settings.API_VERSION)
+app.include_router(course.router, prefix=settings.API_VERSION)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.get("/api/university")
+def root():
+    return {"message": "Welcome to University"}
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
