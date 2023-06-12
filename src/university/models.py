@@ -421,7 +421,7 @@ class Mark_exam(Base):
         BigInteger,
         primary_key=True,
         server_default=GUID_SERVER_DEFAULT_POSTGRESQL)
-    mark_id = Column(Integer, nullable=False)
+    mark = Column(Integer, nullable=False)
     student_id = Column(
         Integer,
         ForeignKey("student.student_id", ondelete="CASCADE"))

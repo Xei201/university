@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from university import settings
-from university.routers import building, audience, student, teacher, course
+from university.routers import building, audience, student, teacher, course, exam_mark
 
 app = FastAPI()
 
@@ -24,6 +24,7 @@ app.include_router(audience.router, prefix=settings.API_VERSION)
 app.include_router(student.router, prefix=settings.API_VERSION)
 app.include_router(teacher.router, prefix=settings.API_VERSION)
 app.include_router(course.router, prefix=settings.API_VERSION)
+app.include_router(exam_mark.router, prefix=settings.API_VERSION)
 
 
 @app.get("/api/university")

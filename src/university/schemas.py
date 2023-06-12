@@ -117,4 +117,14 @@ class GetTeacherBase(ListTeacherBase):
     course_programs: Optional[List[CourseProgramBase]]
 
 
+# Mark exam models
+class MarkExamBase(BaseModel):
+    mark: int
 
+    class Config:
+        orm_mode = True
+
+
+class CreateMarkExamBase(MarkExamBase):
+    student_id: int
+    exam_id: int

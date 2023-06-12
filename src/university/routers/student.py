@@ -19,9 +19,9 @@ def get_students(db: Session = Depends(get_db)):
     return db_student
 
 
-@router.get("/{id}", response_model=schemas.GetStudentBase)
-def get_student(id: int, db: Session = Depends(get_db)):
-    db_student = student.get_obj(db=db, id=id)
+@router.get("/{student_id}", response_model=schemas.GetStudentBase)
+def get_student(student_id: int, db: Session = Depends(get_db)):
+    db_student = student.get_obj(db=db, id=student_id)
 
     return db_student
 
@@ -33,21 +33,9 @@ def create_student(payload: schemas.StudentBase, db: Session = Depends(get_db)):
     return {"status": "success", "object": new_student}
 
 
-
-
-@router.post('/', status_code=status.HTTP_201_CREATED)
-def create_building(payload: schemas.BuildingBase, db: Session = Depends(get_db)):
-    new_building = building.get_obj(db=db, id=payload.building_number)
-    if new_building:
-        raise HTTPException(status_code=400, detail="This number building is exist")
-
-    new_building = building.create_obj(db=db, new_object=payload)
-    return {"status": "success", "object": new_building}
-
-
-@router.delete('/{id}')
-def delete_student(id: int, db: Session = Depends(get_db)):
-    student_query = student.get_obj(db=db, id=id)
+@router.delete('/{student_id}')
+def delete_student(student_id: int, db: Session = Depends(get_db)):
+    student_query = student.get_obj(db=db, id=student_id)
     if student_query is None:
         raise HTTPException(status_code=400, detail="Student not exist")
 
@@ -56,8 +44,8 @@ def delete_student(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put('/{id}')
-def update_student(id: int, payload: schemas.StudentBase, db: Session = Depends(get_db)):
+@router.put('/{student_id}')
+def update_student(student_id: int, payload: schemas.StudentBase, db: Session = Depends(get_db)):
     student_query = student.get_obj(db=db, id=id)
     if student_query is None:
         raise HTTPException(status_code=400, detail="Student not exist")
