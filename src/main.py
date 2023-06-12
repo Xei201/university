@@ -27,7 +27,7 @@ app.include_router(course.router, prefix=settings.API_VERSION)
 app.include_router(exam_mark.router, prefix=settings.API_VERSION)
 
 
-@app.get("/api/university")
+@app.get("/api/v1/university")
 def root():
     return {"message": "Welcome to University"}
 
