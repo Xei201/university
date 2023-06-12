@@ -1,5 +1,5 @@
 from .. import models, schemas
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 
 def get_obj(db: Session, id: int):
