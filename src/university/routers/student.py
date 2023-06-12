@@ -46,9 +46,9 @@ def delete_student(student_id: int, db: Session = Depends(get_db)):
 
 @router.put('/{student_id}')
 def update_student(student_id: int, payload: schemas.StudentBase, db: Session = Depends(get_db)):
-    student_query = student.get_obj(db=db, id=id)
+    student_query = student.get_obj(db=db, id=student_id)
     if student_query is None:
         raise HTTPException(status_code=400, detail="Student not exist")
 
-    update_student = student.update_obj(db=db, id=id, new_data=payload)
+    update_student = student.update_obj(db=db, id=student_id, new_data=payload)
     return {"status": "success", "student": update_student}
